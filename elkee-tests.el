@@ -43,5 +43,16 @@
    "")
   "Base64-encoded KDBX v4 dummy DB. Pass='dummy'.")
 
+(defmacro with-dummy-db (db &rest body)
+  (declare (indent 1) (debug t))
+  `(with-temp-buffer
+     (set-buffer-multibyte nil)
+     (insert (cond ((eq ,db 'kdbx4) elkee-kdbx4-dummy)
+                   (t (error "Wrong db type: %s" `,db))))
+     (base64-decode-region (point-min) (point-max))
+     (goto-char (point-min))
+
+     (progn ,@body)))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
