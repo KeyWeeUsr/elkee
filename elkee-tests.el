@@ -57,6 +57,47 @@
 
      (progn ,@body)))
 
+(ert-deftest elkee-util-intparsing-matrix ()
+  (let ((matrix `((:name "Check nil" :data nil
+                   :result nil :error (wrong-type-argument arrayp nil))
+                  (:name "Check string" :data ""
+                   :result nil :error (args-out-of-range "" 0))
+                  (:name "Check list" :data (1 2 3)
+                   :result nil :error (wrong-type-argument arrayp (1 2 3)))
+                  (:name "Check nil vector" :data ,(make-vector 0 nil)
+                   :result nil :error (args-out-of-range [] 0))
+                  (:name "Check empty vector" :data ,(make-vector 1 nil)
+                   :result nil :error (wrong-type-argument
+                                             number-or-marker-p nil))
+                  (:name "Check vector 1" :data ,(make-vector 1 0)
+                   :result nil :error (args-out-of-range [0] 1))
+                  (:name "Check vector 2" :data ,(make-vector 2 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 3" :data ,(make-vector 3 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 4" :data ,(make-vector 4 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 5" :data ,(make-vector 5 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 6" :data ,(make-vector 6 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 7" :data ,(make-vector 7 0)
+                   :result 0 :error nil)
+                  (:name "Check vector 8" :data ,(make-vector 8 0)
+                   :result 0 :error nil)))
+        (funcs '(elkee-read-uint16)))
+    (dolist (fn funcs)
+      (dolist (case matrix)
+        (let (result (exp-err (plist-get case :error)))
+          (if exp-err
+              (condition-case err
+                  (progn
+                    (setq result (funcall fn (plist-get case :data)))
+                    (should nil))
+                (error (should (equal err exp-err))))
+            (setq result (funcall fn (plist-get case :data)))
+            (should (equal result (plist-get case :result)))))))))
+
 (ert-deftest elkee-kdbx4-signature-parse-buffer ()
   (with-dummy-db 'kdbx4
     (should (equal (elkee-parse-signature-buffer (current-buffer))

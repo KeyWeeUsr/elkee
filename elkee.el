@@ -30,6 +30,11 @@
 (defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
   "Expected KDBX file signature.")
 
+(defun elkee-read-uint16 (data &optional offset)
+  "Read an unsigned 16-bit integer from DATA at OFFSET."
+  (+ (lsh (aref data (or offset 0)) 0)
+     (lsh (aref data (1+ (or offset 0))) 8)))
+
 (defun elkee-parse-signature-buffer (buff &optional delete start-pos)
   "Parse buffer BUFF for KDBX signature.
 Optional argument DELETE destroys buffer data while reading.
