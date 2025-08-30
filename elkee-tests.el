@@ -136,5 +136,11 @@
       (should (equal (string-to-vector (buffer-string))
                      [#x3F #x40 #x49 #x4A])))))
 
+(ert-deftest elkee-kdbx4-version-internal ()
+  (with-dummy-db 'kdbx4
+    (delete-char (length elkee-signature))
+    (should (equal (elkee-parse-version-buffer (current-buffer) t)
+                   '(4 0)))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here

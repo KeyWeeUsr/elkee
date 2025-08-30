@@ -56,6 +56,36 @@ Optional argument START-POS marks position to start processing from."
           (delete-region start-pos (+ start-pos (length elkee-signature))))
         header))))
 
+(defun elkee-parse-version-buffer (buff &optional delete start-pos)
+  "Parse KDBX signature from buffer BUFF.
+Optional argument DELETE destroys buffer data while reading.
+Optional argument START-POS marks position to start processing from."
+  (with-current-buffer buff
+    (save-excursion
+      (unless start-pos
+        (setq start-pos (point-min)))
+
+      (let* ((size (/ 16 elkee-byte))
+             (minor-bytes (make-vector size nil))
+             (major-bytes (make-vector size nil))
+             last-pos version)
+        (goto-char start-pos)
+        (dotimes (idx size)
+          (aset minor-bytes idx (char-after))
+          (forward-char 1))
+        (push (elkee-read-uint16 minor-bytes) version)
+        (when delete
+          (delete-region start-pos (+ start-pos size))
+          (goto-char start-pos))
+
+        (dotimes (idx size)
+          (aset major-bytes idx (char-after))
+          (forward-char 1))
+        (push (elkee-read-uint16 major-bytes) version)
+        (when delete
+          (delete-region start-pos (+ start-pos size)))
+        version))))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")
