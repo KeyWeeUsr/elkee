@@ -51,6 +51,11 @@
             (+ result (lsh (aref data (+ idx offset)) (* idx elkee-byte)))))
     result))
 
+(defun elkee-read-sint (data bitness &optional offset)
+  "Read a signed integer of BITNESS from DATA at OFFSET."
+  (let ((val (elkee-read-uint data bitness offset)))
+    (if (>= val (/ (expt 2 bitness) 2)) (- val (expt 2 bitness)) val)))
+
 (defun elkee-parse-signature-buffer (buff &optional delete start-pos)
   "Parse buffer BUFF for KDBX signature.
 Optional argument DELETE destroys buffer data while reading.
