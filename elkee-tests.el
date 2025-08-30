@@ -200,5 +200,59 @@
     (should (equal (elkee-parse-version-buffer (current-buffer) t)
                    '(4 0)))))
 
+(ert-deftest elkee-kdbx4-headers-internal ()
+  (with-dummy-db 'kdbx4
+    (goto-char (point-min))
+    (delete-char (+ (length elkee-signature)
+                    (/ elkee-32-bit elkee-byte)))
+    (should (equal
+             (elkee-parse-headers-buffer (current-buffer) 4 0 t)
+             `((kdf-parameters
+                . ((V . 19)
+                   (S . ,(apply 'string
+                                '(#x24 #xD2 #x89 #xF7 #xE6 #xB8 #xEE #xE2
+                                  #x0A #xF9 #x11 #xF3 #x0B #xA2 #xFC #x3D
+                                  #xD7 #xF6 #xEF #x42 #x2E #x25 #xA3 #x70
+                                  #x63 #x39 #x1C #x8C #x26 #x77 #x02 #x44)))
+                   (P . 2)
+                   (M . 67108864)
+                   (I . 11)
+                   (kdf . argon2)
+                   (version . ,(apply 'string '(#x00 #x01)))))
+               (compression . gzip)
+               (cipher . aes256)
+               (end . (#x0D #x0A #x0D #x0A))
+               (kdf-parameters-raw
+                . (#x00 #x01 #x42 #x05 #x00 #x00 #x00 #x24
+                   #x55 #x55 #x49 #x44 #x10 #x00 #x00 #x00
+                   #xEF #x63 #x6D #xDF #x8C #x29 #x44 #x4B
+                   #x91 #xF7 #xA9 #xA4 #x03 #xE3 #x0A #x0C
+                   #x05 #x01 #x00 #x00 #x00 #x49 #x08 #x00
+                   #x00 #x00 #x0B #x00 #x00 #x00 #x00 #x00
+                   #x00 #x00 #x05 #x01 #x00 #x00 #x00 #x4D
+                   #x08 #x00 #x00 #x00 #x00 #x00 #x00 #x04
+                   #x00 #x00 #x00 #x00 #x04 #x01 #x00 #x00
+                   #x00 #x50 #x04 #x00 #x00 #x00 #x02 #x00
+                   #x00 #x00 #x42 #x01 #x00 #x00 #x00 #x53
+                   #x20 #x00 #x00 #x00 #x24 #xD2 #x89 #xF7
+                   #xE6 #xB8 #xEE #xE2 #x0A #xF9 #x11 #xF3
+                   #x0B #xA2 #xFC #x3D #xD7 #xF6 #xEF #x42
+                   #x2E #x25 #xA3 #x70 #x63 #x39 #x1C #x8C
+                   #x26 #x77 #x02 #x44 #x04 #x01 #x00 #x00
+                   #x00 #x56 #x04 #x00 #x00 #x00 #x13 #x00
+                   #x00 #x00 #x00))
+               (encryption-iv
+                . (#x91 #x71 #x6B #x53 #x72 #x0B #x77 #x80
+                   #xFB #xC2 #x5F #xDA #x6F #x44 #x46 #x74))
+               (master-seed
+                . (#x84 #xF8 #x8E #x88 #xAF #xFE #x19 #x38
+                   #x8F #xD1 #x3C #x33 #x7E #x22 #x5E #x8F
+                   #x96 #x67 #x23 #x7F #x6E #x9F #x3B #xB2
+                   #x56 #x3A #xCE #x6A #x4A #x68 #x5D #x1B))
+               (compression-flags . (#x01 #x00 #x00 #x00))
+               (cipher-id
+                . (#x31 #xC1 #xF2 #xE6 #xBF #x71 #x43 #x50
+                   #xBE #x58 #x05 #x21 #x6A #xFC #x5A #xFF)))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
