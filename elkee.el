@@ -30,6 +30,24 @@
 (defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
   "Expected KDBX file signature.")
 
+(defun elkee-parse-signature-buffer (buff &optional delete start-pos)
+  "Parse buffer BUFF for KDBX signature.
+Optional argument DELETE destroys buffer data while reading.
+Optional argument START-POS marks position to start processing from."
+  (with-current-buffer buff
+    (save-excursion
+      (unless start-pos
+        (setq start-pos (point-min)))
+
+      (let ((header (make-vector 8 nil)))
+        (goto-char start-pos)
+        (dotimes (idx (length elkee-signature))
+          (aset header idx (char-after))
+          (forward-char 1))
+        (when delete
+          (delete-region start-pos (+ start-pos (length elkee-signature))))
+        header))))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")

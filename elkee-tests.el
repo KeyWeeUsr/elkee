@@ -2,6 +2,9 @@
 
 ;;; Code:
 
+(require 'ert)
+(require 'elkee)
+
 (defconst elkee-kdbx4-dummy
   (string-join
    '("A9mimmf7S7UAAAQAAhAAAAAxwfLmv3FDUL5YBSFq/Fr/AwQAAAABAAAABCAAAACE"
@@ -53,6 +56,44 @@
      (goto-char (point-min))
 
      (progn ,@body)))
+
+(ert-deftest elkee-kdbx4-signature-parse-buffer ()
+  (with-dummy-db 'kdbx4
+    (should (equal (elkee-parse-signature-buffer (current-buffer))
+                   elkee-signature))))
+
+(ert-deftest elkee-kdbx4-signature-parse-buffer-destructive ()
+  (with-dummy-db 'kdbx4
+    (let ((old-len (length (buffer-string))))
+      (should (equal (elkee-parse-signature-buffer (current-buffer) t)
+                     elkee-signature))
+      (should (= (- old-len (length elkee-signature))
+                 (length (buffer-string)))))))
+
+(ert-deftest elkee-kdbx4-signature-parse-buffer-offset ()
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (dolist (item '(#x3F #x40 #x41 #x42 #x43 #x44
+                    #x45 #x46 #x47 #x48 #x49 #x4A))
+      (insert item))
+    (let ((old-len (length (buffer-string))))
+      (should (equal (elkee-parse-signature-buffer
+                      (current-buffer) nil (+ (point-min) 2))
+                     [#x41 #x42 #x43 #x44 #x45 #x46 #x47 #x48]))
+      (should (= (- old-len (length (buffer-string))))))))
+
+(ert-deftest elkee-kdbx4-signature-parse-buffer-offset-destructive ()
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (dolist (item '(#x3F #x40 #x41 #x42 #x43 #x44
+                    #x45 #x46 #x47 #x48 #x49 #x4A))
+      (insert item))
+    (let ((old-len (length (buffer-string))))
+      (should (equal (elkee-parse-signature-buffer
+                      (current-buffer) t (+ (point-min) 2))
+                     [#x41 #x42 #x43 #x44 #x45 #x46 #x47 #x48]))
+      (should (equal (string-to-vector (buffer-string))
+                     [#x3F #x40 #x49 #x4A])))))
 
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
