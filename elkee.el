@@ -38,6 +38,14 @@
   (+ (lsh (aref data (or offset 0)) 0)
      (lsh (aref data (1+ (or offset 0))) elkee-byte)))
 
+(defun elkee-read-uint32 (data &optional offset)
+  "Read an unsigned 32-bit integer from DATA at OFFSET."
+  (let ((offset (or offset 0)))
+    (+ (lsh (aref data (+ 0 offset)) (* 0 elkee-byte))
+       (lsh (aref data (+ 1 offset)) (* 1 elkee-byte))
+       (lsh (aref data (+ 2 offset)) (* 2 elkee-byte))
+       (lsh (aref data (+ 3 offset)) (* 3 elkee-byte)))))
+
 (defun elkee-parse-signature-buffer (buff &optional delete start-pos)
   "Parse buffer BUFF for KDBX signature.
 Optional argument DELETE destroys buffer data while reading.
