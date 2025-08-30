@@ -27,6 +27,16 @@
 
 ;;; Code:
 
-;; private/helper funcs
+(cl-defstruct elkee-database
+  "Struct holding all the available info about KeePass database."
+  (version nil :type 'list :documentation "Major and other parts of version.")
+  (headers nil :type 'alist :documentation "Mapping for available headers.")
+  (key "" :type 'string :documentation "Transformed key for the database.")
+  (encrypted-blocks nil :type 'list :documentation "List of raw data blocks.")
+  (decrypted-blocks nil :type 'list :documentation "List of raw data blocks.")
+  (xml-headers nil :type 'alist :documentation "Protected XML stream headers.")
+  (xml "" :type 'string :documentation "Decrypted serialized XML.")
+  (xml-unsafe "" :type 'string :documentation "Unprotected, unsafe XML."))
+
 (provide 'elkee)
 ;;; elkee.el ends here
