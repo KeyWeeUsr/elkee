@@ -33,30 +33,23 @@
 (defconst elkee-byte 8
   "Bits in a byte.")
 
-(defun elkee-read-uint16 (data &optional offset)
-  "Read an unsigned 16-bit integer from DATA at OFFSET."
-  (+ (lsh (aref data (or offset 0)) 0)
-     (lsh (aref data (1+ (or offset 0))) elkee-byte)))
+(defconst elkee-16-bit 16
+  "Bitness of 16-bit int.")
 
-(defun elkee-read-uint32 (data &optional offset)
-  "Read an unsigned 32-bit integer from DATA at OFFSET."
-  (let ((offset (or offset 0)))
-    (+ (lsh (aref data (+ 0 offset)) (* 0 elkee-byte))
-       (lsh (aref data (+ 1 offset)) (* 1 elkee-byte))
-       (lsh (aref data (+ 2 offset)) (* 2 elkee-byte))
-       (lsh (aref data (+ 3 offset)) (* 3 elkee-byte)))))
+(defconst elkee-32-bit 32
+  "Bitness of 32-bit int.")
 
-(defun elkee-read-uint64 (data &optional offset)
-  "Read an unsigned 64-bit integer from DATA at OFFSET."
-  (let ((offset (or offset 0)))
-    (+ (lsh (aref data (+ 0 offset)) (* 0 elkee-byte))
-       (lsh (aref data (+ 1 offset)) (* 1 elkee-byte))
-       (lsh (aref data (+ 2 offset)) (* 2 elkee-byte))
-       (lsh (aref data (+ 3 offset)) (* 3 elkee-byte))
-       (lsh (aref data (+ 4 offset)) (* 4 elkee-byte))
-       (lsh (aref data (+ 5 offset)) (* 5 elkee-byte))
-       (lsh (aref data (+ 6 offset)) (* 6 elkee-byte))
-       (lsh (aref data (+ 7 offset)) (* 7 elkee-byte)))))
+(defconst elkee-64-bit 64
+  "Bitness of 64-bit int.")
+
+(defun elkee-read-uint (data bitness &optional offset)
+  "Read an unsigned integer of BITNESS from DATA at OFFSET."
+  (let ((offset (or offset 0))
+        (result 0))
+    (dotimes (idx (/ bitness elkee-byte))
+      (setq result
+            (+ result (lsh (aref data (+ idx offset)) (* idx elkee-byte)))))
+    result))
 
 (defun elkee-parse-signature-buffer (buff &optional delete start-pos)
   "Parse buffer BUFF for KDBX signature.
@@ -85,7 +78,7 @@ Optional argument START-POS marks position to start processing from."
       (unless start-pos
         (setq start-pos (point-min)))
 
-      (let* ((size (/ 16 elkee-byte))
+      (let* ((size (/ elkee-16-bit elkee-byte))
              (minor-bytes (make-vector size nil))
              (major-bytes (make-vector size nil))
              last-pos version)
@@ -93,7 +86,7 @@ Optional argument START-POS marks position to start processing from."
         (dotimes (idx size)
           (aset minor-bytes idx (char-after))
           (forward-char 1))
-        (push (elkee-read-uint16 minor-bytes) version)
+        (push (elkee-read-uint minor-bytes elkee-16-bit) version)
         (when delete
           (delete-region start-pos (+ start-pos size))
           (goto-char start-pos))
@@ -101,7 +94,7 @@ Optional argument START-POS marks position to start processing from."
         (dotimes (idx size)
           (aset major-bytes idx (char-after))
           (forward-char 1))
-        (push (elkee-read-uint16 major-bytes) version)
+        (push (elkee-read-uint major-bytes elkee-16-bit) version)
         (when delete
           (delete-region start-pos (+ start-pos size)))
         version))))

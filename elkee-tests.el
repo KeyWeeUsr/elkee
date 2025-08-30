@@ -61,99 +61,99 @@
   (let ((matrix `((:name "Check nil"
                    :data nil :result nil
                    :error wrong-type-argument
-                   :error-args ((elkee-read-uint16 . (arrayp nil))
-                                (elkee-read-uint32 . (arrayp nil))
-                                (elkee-read-uint64 . (arrayp nil))))
+                   :error-args ((,elkee-16-bit . (arrayp nil))
+                                (,elkee-32-bit . (arrayp nil))
+                                (,elkee-64-bit . (arrayp nil))))
                   (:name "Check string"
                    :data "" :result nil
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . ("" 0))
-                                (elkee-read-uint32 . ("" 0))
-                                (elkee-read-uint64 . ("" 0))))
+                   :error-args ((,elkee-16-bit . ("" 0))
+                                (,elkee-32-bit . ("" 0))
+                                (,elkee-64-bit . ("" 0))))
                   (:name "Check list"
                    :data (1 2 3) :result nil
                    :error wrong-type-argument
-                   :error-args ((elkee-read-uint16 . (arrayp (1 2 3)))
-                                (elkee-read-uint32 . (arrayp (1 2 3)))
-                                (elkee-read-uint64 . (arrayp (1 2 3)))))
+                   :error-args ((,elkee-16-bit . (arrayp (1 2 3)))
+                                (,elkee-32-bit . (arrayp (1 2 3)))
+                                (,elkee-64-bit . (arrayp (1 2 3)))))
                   (:name "Check nil vector"
                    :data ,(make-vector 0 nil) :result nil
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . ([] 0))
-                                (elkee-read-uint32 . ([] 0))
-                                (elkee-read-uint64 . ([] 0))))
+                   :error-args ((,elkee-16-bit . ([] 0))
+                                (,elkee-32-bit . ([] 0))
+                                (,elkee-64-bit . ([] 0))))
                   (:name "Check empty vector"
                    :data ,(make-vector 1 nil) :result nil
                    :error wrong-type-argument
                    :error-args
-                   ((elkee-read-uint16 . (number-or-marker-p nil))
-                    (elkee-read-uint32 . (number-or-marker-p nil))
-                    (elkee-read-uint64 . (number-or-marker-p nil))))
+                   ((,elkee-16-bit . (number-or-marker-p nil))
+                    (,elkee-32-bit . (number-or-marker-p nil))
+                    (,elkee-64-bit . (number-or-marker-p nil))))
                   (:name "Check vector 1"
                    :data ,(make-vector 1 0) :result nil
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . ([0] 1))
-                                (elkee-read-uint32 . ([0] 1))
-                                (elkee-read-uint64 . ([0] 1))))
+                   :error-args ((,elkee-16-bit . ([0] 1))
+                                (,elkee-32-bit . ([0] 1))
+                                (,elkee-64-bit . ([0] 1))))
                   (:name "Check vector 2"
                    :data ,(make-vector 2 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . ([0 0] 2))
-                                (elkee-read-uint64 . ([0 0] 2))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . ([0 0] 2))
+                                (,elkee-64-bit . ([0 0] 2))))
                   (:name "Check vector 3"
                    :data ,(make-vector 3 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . ([0 0 0] 3))
-                                (elkee-read-uint64 . ([0 0 0] 3))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . ([0 0 0] 3))
+                                (,elkee-64-bit . ([0 0 0] 3))))
                   (:name "Check vector 4"
                    :data ,(make-vector 4 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . nil)
-                                (elkee-read-uint64 . ([0 0 0 0] 4))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . nil)
+                                (,elkee-64-bit . ([0 0 0 0] 4))))
                   (:name "Check vector 5"
                    :data ,(make-vector 5 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . nil)
-                                (elkee-read-uint64 . ([0 0 0 0 0] 5))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . nil)
+                                (,elkee-64-bit . ([0 0 0 0 0] 5))))
                   (:name "Check vector 6"
                    :data ,(make-vector 6 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . nil)
-                                (elkee-read-uint64 . ([0 0 0 0 0 0] 6))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . nil)
+                                (,elkee-64-bit . ([0 0 0 0 0 0] 6))))
                   (:name "Check vector 7"
                    :data ,(make-vector 7 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . nil)
-                                (elkee-read-uint64 . ([0 0 0 0 0 0 0] 7))))
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . nil)
+                                (,elkee-64-bit . ([0 0 0 0 0 0 0] 7))))
                   (:name "Check vector 8"
                    :data ,(make-vector 8 0) :result 0
                    :error args-out-of-range
-                   :error-args ((elkee-read-uint16 . nil)
-                                (elkee-read-uint32 . nil)
-                                (elkee-read-uint64 . nil)))))
-        (funcs '(elkee-read-uint16
-                 elkee-read-uint32
-                 elkee-read-uint64)))
-    (dolist (fn funcs)
+                   :error-args ((,elkee-16-bit . nil)
+                                (,elkee-32-bit . nil)
+                                (,elkee-64-bit . nil)))))
+        (bitness `(,elkee-16-bit
+                   ,elkee-16-bit
+                   ,elkee-32-bit)))
+    (dolist (kind bitness)
       (dolist (case matrix)
         (let ((exp-err (plist-get case :error))
-              (exp-err-args (alist-get fn (plist-get case :error-args)))
+              (exp-err-args (alist-get kind (plist-get case :error-args)))
               result)
           (if exp-err-args
               (condition-case err
                   (progn
-                    (setq result (funcall fn (plist-get case :data)))
+                    (setq result (elkee-read-uint (plist-get case :data) kind))
                     (should nil))
                 (error
                  (should (equal (car err) exp-err))
                  (should (equal (cdr err) exp-err-args))))
-            (setq result (funcall fn (plist-get case :data)))
+            (setq result (elkee-read-uint (plist-get case :data) kind))
             (should (equal result (plist-get case :result)))))))))
 
 (ert-deftest elkee-kdbx4-signature-parse-buffer ()
