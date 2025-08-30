@@ -30,10 +30,13 @@
 (defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
   "Expected KDBX file signature.")
 
+(defconst elkee-byte 8
+  "Bits in a byte.")
+
 (defun elkee-read-uint16 (data &optional offset)
   "Read an unsigned 16-bit integer from DATA at OFFSET."
   (+ (lsh (aref data (or offset 0)) 0)
-     (lsh (aref data (1+ (or offset 0))) 8)))
+     (lsh (aref data (1+ (or offset 0))) elkee-byte)))
 
 (defun elkee-parse-signature-buffer (buff &optional delete start-pos)
   "Parse buffer BUFF for KDBX signature.
@@ -44,7 +47,7 @@ Optional argument START-POS marks position to start processing from."
       (unless start-pos
         (setq start-pos (point-min)))
 
-      (let ((header (make-vector 8 nil)))
+      (let ((header (make-vector elkee-byte nil)))
         (goto-char start-pos)
         (dotimes (idx (length elkee-signature))
           (aset header idx (char-after))
