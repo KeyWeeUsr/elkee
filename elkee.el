@@ -27,6 +27,9 @@
 
 ;;; Code:
 
+(defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
+  "Expected KDBX file signature.")
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")
