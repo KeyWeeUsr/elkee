@@ -454,5 +454,18 @@
                 . (#x31 #xC1 #xF2 #xE6 #xBF #x71 #x43 #x50
                    #xBE #x58 #x05 #x21 #x6A #xFC #x5A #xFF)))))))
 
+(ert-deftest elkee-kdbx4-transformed-key ()
+  (with-dummy-db 'kdbx4
+    (let* ((password "dummy")
+           (headers (elkee-database-headers
+                     (elkee-read-buffer "dummy" nil))))
+      (should (equal (elkee-compute-transformed-key
+                      (elkee-compute-composite-key password nil)
+                      (alist-get 'kdf-parameters headers))
+                     '(#x87 #xCD #x99 #xE9 #xE3 #x84 #xCB #xC3
+                       #xC3 #x9F #xC6 #x7F #xDF #x1E #xC5 #x52
+                       #xB2 #xAF #x38 #x00 #x22 #x24 #x67 #xE1
+                       #x00 #x7B #xF7 #x20 #x98 #x04 #xD1 #xF4))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
