@@ -429,6 +429,43 @@ KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
     (dolist (item (append seed transformed-key)) (insert item))
     (secure-hash 'sha256 (buffer-string) nil nil t)))
 
+(defun elkee-parse-encrypted-buffer (buff &optional delete start-pos)
+  "Parse encrypted bytes from buffer BUFF.
+Optional argument DELETE destroys buffer data while reading.
+Optional argument START-POS marks position to start processing from."
+  (let (blocks)
+    (let* ((size (/ elkee-32-bit elkee-byte))
+           (block-length-raw (make-vector size nil))
+           break hmac-hash block-length block-data)
+      (with-current-buffer buff
+        (save-excursion
+          (unless start-pos
+            (setq start-pos (point-min)))
+
+          (goto-char start-pos)
+          (while (not break)
+            (setq hmac-hash nil)
+            (dotimes (_ 32)
+              (push (char-after) hmac-hash)
+              (forward-char 1))
+            (setq hmac-hash (reverse hmac-hash))
+
+            ;; block length
+            (dotimes (idx size)
+              (aset block-length-raw idx (char-after))
+              (forward-char 1))
+
+            (setq block-length (elkee-read-uint block-length-raw elkee-32-bit))
+            (if (= block-length 0)
+                (setq break t)
+              (dotimes (_ block-length)
+                (push (char-after) block-data)
+                (forward-char 1))
+              (push (reverse block-data) blocks)))
+          (delete-region (point-min) (point)))))
+    (setq blocks (reverse blocks))
+    blocks))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")
@@ -439,6 +476,41 @@ KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
   (xml-headers nil :type 'alist :documentation "Protected XML stream headers.")
   (xml "" :type 'string :documentation "Decrypted serialized XML.")
   (xml-unsafe "" :type 'string :documentation "Unprotected, unsafe XML."))
+
+(defun elkee-aes256-decrypt-block (key iv data)
+  "Decrypt AES256-CBC-encrypted DATA block with KEY and IV."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (dolist (byte data) (insert byte))
+    (call-process-region
+     (point-min) (point-max)
+     ;; Note: openssl decryption handles the data padding
+     "openssl" t (current-buffer) nil
+     "enc" "-d" "-aes-256-cbc"
+     "-in" "-" "-out" "-"
+     "-K" (apply 'concat (mapcar (lambda (x) (format "%02x" x)) key))
+     "-iv" (apply 'concat (mapcar (lambda (x) (format "%02x" x)) iv)))
+    (buffer-string)))
+
+(defun elkee-aes256-decrypt-buffer (kdbx buff &optional delete start-pos)
+  "Decrypt AES256-encrypted .kdbx contents of BUFF into KDBX struct.
+Optional argument DELETE destroys buffer data while reading.
+Optional argument START-POS marks position to start processing from."
+  (with-current-buffer buff
+    (save-excursion
+      (let ((encrypted-blocks (elkee-parse-encrypted-buffer
+                               buff delete start-pos))
+            decrypted-blocks)
+        (setf (elkee-database-encrypted-blocks kdbx) encrypted-blocks)
+        (dolist (block encrypted-blocks)
+          (push (elkee-aes256-decrypt-block
+                 (elkee-database-key kdbx)
+                 (alist-get 'encryption-iv (elkee-database-headers kdbx))
+                 block)
+                decrypted-blocks))
+        (setq decrypted-blocks (reverse decrypted-blocks))
+        (setf (elkee-database-decrypted-blocks kdbx) decrypted-blocks)
+        decrypted-blocks))))
 
 (provide 'elkee)
 ;;; elkee.el ends here
