@@ -542,5 +542,64 @@
                          (apply 'concat (mapcar (lambda (x) (format "%02x" x))
                                                 (car blocks)))))))))
 
+(ert-deftest elkee-kdbx4-unprotect-xml-internal ()
+  (require 'elchacha)
+  (with-dummy-db 'kdbx4
+    (let* ((password "dummy")
+           (contained "qiFyepmb3i82Eic=")
+           (expected-group "Root")
+           (expected "My_Password")
+           (kdbx (elkee-read-buffer password nil))
+           (xml (elkee-database-xml kdbx))
+           (real (apply 'string (mapcar (lambda (x) x) xml)))
+           parsed-xml target-group target-node)
+      (should (string-match contained real))
+
+      (setq parsed-xml
+            (with-temp-buffer
+              (set-buffer-multibyte nil)
+              (insert xml)
+              (libxml-parse-xml-region (point-min) (point-max))))
+
+      (dolist (node parsed-xml)
+        (when (eq 'Root (car-safe node))
+          (dolist (root-node node)
+            (when (eq 'Group (car-safe root-node))
+              (dolist (group-node root-node)
+                (when (and (eq 'Name (car-safe group-node))
+                           (string= expected-group
+                                    (nth 2 group-node)))
+                  (setq target-group root-node)))))))
+
+      (dolist (node target-group)
+        (when (eq 'Entry (car-safe node))
+          (dolist (entry-node node)
+            (when (eq 'String (car-safe entry-node))
+              (dolist (string-node entry-node)
+                (when (and (eq 'Key (car-safe string-node))
+                           (string= "Password" (caddr string-node)))
+                  (setq target-node entry-node)))))))
+
+      (should (catch 'done
+                (dolist (node target-node)
+                  (when (eq 'Value (car-safe node))
+                    (should (cdr-safe node))
+                    (should (string= "True"
+                                     (alist-get 'Protected (cadr node))))
+                    (should (string= contained (caddr node)))
+                    (throw 'done t)))))
+
+      (let* ((creds (elkee-unprotect-xml-get-creds kdbx))
+             (key (car creds))
+             (nonce (cdr creds))
+             (decrypted (elchacha-encrypt-decrypt
+                         (apply 'vector key) (apply 'vector nonce)
+                         (apply 'vector
+                                (string-to-list (base64-decode-string
+                                                 contained))))))
+        (should (string= expected
+                         (apply 'string
+                                (mapcar (lambda (x) x) decrypted))))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here

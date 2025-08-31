@@ -584,6 +584,20 @@ Optional argument START-POS marks position to start processing from."
           (setf (elkee-database-xml-headers kdbx) headers)))
       (buffer-string))))
 
+(defun elkee-unprotect-xml-get-creds (kdbx)
+  "Calculate credentials for unprotecting XML fields from KDBX struct."
+  (let* ((key-hash
+          (with-temp-buffer
+            (set-buffer-multibyte nil)
+            (dolist (item (alist-get
+                           'protected-stream-key
+                           (elkee-database-xml-headers kdbx)))
+              (insert item))
+            (secure-hash 'sha512 (buffer-string) nil nil t)))
+         (key (string-to-list (substring key-hash 0 32)))
+         (nonce (string-to-list (substring key-hash 32 44))))
+    (cons key nonce)))
+
 (defun elkee-read-buffer (password keyfile)
   "Destructively read the current buffer into a KeePass database structure.
 Argument PASSWORD is plaintext/string password
