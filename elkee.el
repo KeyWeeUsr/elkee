@@ -615,5 +615,15 @@ Argument KEYFILE is path to a keyfile."
       (setf (elkee-database-xml-unsafe kdbx) (elkee-unprotect-xml kdbx)))
     kdbx))
 
+(defun elkee-read (filepath password keyfile)
+  "Read FILEPATH into a KeePass database structure.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (setq-local buffer-file-coding-system 'binary)
+    (insert-file-contents-literally filepath nil)
+    (elkee-read-buffer password keyfile)))
+
 (provide 'elkee)
 ;;; elkee.el ends here
