@@ -422,6 +422,13 @@ KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
       (kill-buffer (get-buffer-create "*elkee-argon*"))
       (delete-file wrapper))))
 
+(defun elkee-compute-master-key (seed transformed-key)
+  "Derive master key out of SEED and TRANSFORMED-KEY."
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (dolist (item (append seed transformed-key)) (insert item))
+    (secure-hash 'sha256 (buffer-string) nil nil t)))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")
