@@ -314,6 +314,27 @@ Ref: VS2022/KeePassLib/Serialization/KdbxFile.Read.cs#L319."
                     (alist-get 'value new-item)))))))
     headers))
 
+(defun elkee-compute-composite-password-part (text &optional encoding)
+  "Compute composite key's password part from TEXT at ENCODING (or utf-8)."
+  (unless encoding (setq encoding 'utf-8))
+  (secure-hash 'sha256 (encode-coding-string text encoding) nil nil t))
+
+(defun elkee-compute-composite-keyfile-part (filepath)
+  "Compute composite key's keyfile part from FILEPATH."
+  (ignore filepath))
+
+(defun elkee-compute-composite-key (password keyfile)
+  "Compute composite key from PASSWORD and KEYFILE."
+  (let ((bytes (append
+                (when (and password (> (length password) 0))
+                  (elkee-compute-composite-password-part password))
+                (when keyfile
+                  (elkee-compute-composite-keyfile-part keyfile)))))
+    (with-temp-buffer
+      (set-buffer-multibyte nil)
+      (dolist (item bytes) (insert item))
+      (secure-hash 'sha256 (buffer-string) nil nil t))))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")

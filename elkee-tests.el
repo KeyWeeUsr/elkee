@@ -254,5 +254,20 @@
                 . (#x31 #xC1 #xF2 #xE6 #xBF #x71 #x43 #x50
                    #xBE #x58 #x05 #x21 #x6A #xFC #x5A #xFF)))))))
 
+(ert-deftest elkee-compute-composite-password-part ()
+  (let ((part (elkee-compute-composite-password-part "dummy")))
+    (should (string= (string-join '("b5a2c96250612366ea272ffac6d9744a"
+                                    "af4b45aacd96aa7cfcb931ee3b558259"))
+                     (apply 'concat (mapcar (lambda (x) (format "%02x" x))
+                                            part))))))
+
+(ert-deftest elkee-compute-composite-key-password-no-keyfile ()
+  (let ((key (elkee-compute-composite-key "dummy" nil)))
+    (should (string= (string-join
+                      '("1a2a45fb72ab2d3a465a49675921b7e1"
+                        "2a36ca3aa06e4060278ac1046354da9d") "")
+                     (apply 'concat (mapcar (lambda (x) (format "%02x" x))
+                                            key))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
