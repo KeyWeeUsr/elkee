@@ -398,5 +398,10 @@
           (progn (elkee-read-buffer "" nil) (should nil))
         (error (should (eq (car err) 'elkee-unsupported-file)))))))
 
+(ert-deftest keepass-kdbx4-version ()
+  (with-dummy-db 'kdbx4
+    (should (equal (elkee-database-version (elkee-read-buffer "dummy" nil))
+                   '(4 0)))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here

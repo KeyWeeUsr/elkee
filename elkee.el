@@ -612,8 +612,7 @@ Argument KEYFILE is path to a keyfile."
                       ))
       (setf (elkee-database-xml kdbx)
             (elkee-decrypt-buffer kdbx (current-buffer) t))
-      (setf (elkee-database-xml-unsafe kdbx) (elkee-unprotect-xml kdbx)))
-    kdbx))
+    kdbx)))
 
 (defun elkee-read (filepath password keyfile)
   "Read FILEPATH into a KeePass database structure.
