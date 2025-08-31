@@ -467,5 +467,26 @@
                        #xB2 #xAF #x38 #x00 #x22 #x24 #x67 #xE1
                        #x00 #x7B #xF7 #x20 #x98 #x04 #xD1 #xF4))))))
 
+(ert-deftest elkee-kdbx4-master-key ()
+  (with-dummy-db 'kdbx4
+    (let* ((password "dummy")
+           (headers (elkee-database-headers
+                     (elkee-read-buffer "dummy" nil)))
+           (expected
+            '(#x83 #x78 #x91 #x41 #x2B #x1D #xB1 #xE1
+              #x06 #xDB #x92 #xAE #xEC #x71 #xD9 #x8D
+              #x38 #xDD #x0C #xD6 #x23 #xE5 #xB5 #x37
+              #x5D #x58 #x6C #xDA #xCE #xAF #x18 #x12)))
+      (should (equal (elkee-compute-master-key
+                      (alist-get 'master-seed headers)
+                      (elkee-compute-transformed-key
+                       (elkee-compute-composite-key password nil)
+                       (alist-get 'kdf-parameters headers)))
+                     (with-temp-buffer
+                       (set-buffer-multibyte nil)
+                       (dolist (item expected)
+                         (insert item))
+                       (buffer-string)))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
