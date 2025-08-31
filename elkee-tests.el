@@ -202,7 +202,6 @@
 
 (ert-deftest elkee-kdbx4-headers-internal ()
   (with-dummy-db 'kdbx4
-    (goto-char (point-min))
     (delete-char (+ (length elkee-signature)
                     (/ elkee-32-bit elkee-byte)))
     (should (equal
