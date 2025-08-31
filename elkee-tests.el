@@ -269,5 +269,26 @@
                      (apply 'concat (mapcar (lambda (x) (format "%02x" x))
                                             key))))))
 
+(ert-deftest elkee-kdbx4-transformed-key-internal ()
+  (with-dummy-db 'kdbx4
+    (let* ((password "dummy")
+           (headers `((kdf-parameters
+                . ((S . ,(apply 'string
+                                '(#x24 #xD2 #x89 #xF7 #xE6 #xB8 #xEE #xE2
+                                  #x0A #xF9 #x11 #xF3 #x0B #xA2 #xFC #x3D
+                                  #xD7 #xF6 #xEF #x42 #x2E #x25 #xA3 #x70
+                                  #x63 #x39 #x1C #x8C #x26 #x77 #x02 #x44)))
+                   (P . 2)
+                   (M . 67108864)
+                   (I . 11)
+                   (kdf . argon2))))))
+      (should (equal (elkee-compute-transformed-key
+                      (elkee-compute-composite-key password nil)
+                      (alist-get 'kdf-parameters headers))
+                     '(#x87 #xCD #x99 #xE9 #xE3 #x84 #xCB #xC3
+                       #xC3 #x9F #xC6 #x7F #xDF #x1E #xC5 #x52
+                       #xB2 #xAF #x38 #x00 #x22 #x24 #x67 #xE1
+                       #x00 #x7B #xF7 #x20 #x98 #x04 #xD1 #xF4))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here

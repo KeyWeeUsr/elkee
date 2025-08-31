@@ -335,6 +335,93 @@ Ref: VS2022/KeePassLib/Serialization/KdbxFile.Read.cs#L319."
       (dolist (item bytes) (insert item))
       (secure-hash 'sha256 (buffer-string) nil nil t))))
 
+(defconst elkee-script-argon2
+  (string-join
+   '("printf %s $ARGON_KEY \\"
+     "| xxd -r -p \\"
+     "| argon2 \\"
+     "    \"$(printf %s $ARGON_SALT | xxd -r -p)\" \\"
+     "    -p $ARGON_P \\"
+     "    -m $ARGON_M \\"
+     "    -t $ARGON_I \\"
+     "    -d -r")
+   "\n"))
+
+(defun elkee-compute-transformed-key (composite-key kdf-parameters)
+  "Derive transformed key from COMPOSITE-KEY and KDF-PARAMETERS.
+KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
+\\((S . \"salt/nonce\")
+ (P . <parallelism (N threads)>)
+ (M . <memory usage in kilobytes>)
+ (I . <number of iterations>))"
+  (let ((wrapper (format "%s/%s" (if (memq system-type '(ms-dos windows-nt))
+                                     "c:/temp" "/tmp")
+                         "argon-wrapper"))
+        (process-environment
+         (append (mapcar
+                  (lambda (item)
+                    (format "%s=%s" (car item) (cdr item)))
+                  `((ARGON_KEY
+                     . ,(apply 'concat
+                               (mapcar (lambda (x)
+                                         (format "%02x" x))
+                                       composite-key)))
+                    (ARGON_SALT
+                     . ,(apply 'concat
+                               (mapcar (lambda (x)
+                                         (format "%02x" x))
+                                       (alist-get 'S kdf-parameters))))
+                    (ARGON_I
+                     . ,(number-to-string
+                         (alist-get 'I kdf-parameters)))
+                    (ARGON_M
+                     . ,(number-to-string
+                         (logb (/ (alist-get 'M kdf-parameters) 1024))))
+                    (ARGON_P
+                     . ,(number-to-string
+                         (alist-get 'P kdf-parameters)))))
+                 process-environment))
+        proc-status)
+    (unwind-protect
+        (progn
+          (with-temp-buffer
+            (set-buffer-multibyte nil)
+            (insert composite-key)
+            (should (string= (string-join
+                              '("1a2a45fb72ab2d3a465a49675921b7e1"
+                                "2a36ca3aa06e4060278ac1046354da9d") "")
+                             (apply 'concat
+                                    (mapcar (lambda (x) (format "%02x" x))
+                                            (buffer-string)))))
+            (should (string= (string-join
+                              '("24d289f7e6b8eee20af911f30ba2fc3d"
+                                "d7f6ef422e25a37063391c8c26770244") "")
+                             (apply 'concat
+                                    (mapcar (lambda (x) (format "%02x" x))
+                                            (alist-get 'S kdf-parameters)))))
+            (with-temp-file wrapper
+              (insert elkee-script-argon2))
+            (setq proc-status
+                  (call-process
+                   "sh" nil (get-buffer-create "*elkee-argon*") nil wrapper)))
+          (when (and proc-status (> proc-status 0))
+            (error "Argon2 script crashed: %S %s"
+                   (with-current-buffer (get-buffer-create "*elkee-argon*")
+                     (buffer-string))
+                   (number-to-string
+                    (floor
+                     (/ (alist-get 'M kdf-parameters) 1024)))))
+          (with-current-buffer (get-buffer-create "*elkee-argon*")
+            (set-buffer-multibyte nil)
+            (let ((hex-str (buffer-substring-no-properties
+                            (point-min) (+ (point-min) 64))))
+              (mapcar (lambda (idx)
+                        (string-to-number
+                         (substring hex-str (* idx 2) (+ (* idx 2) 2)) 16))
+                      (number-sequence 0 (1- (/ (length hex-str) 2)))))))
+      (kill-buffer (get-buffer-create "*elkee-argon*"))
+      (delete-file wrapper))))
+
 (cl-defstruct elkee-database
   "Struct holding all the available info about KeePass database."
   (version nil :type 'list :documentation "Major and other parts of version.")
