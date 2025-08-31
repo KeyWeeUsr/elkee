@@ -66,6 +66,12 @@
 (defconst elkee-64-bit 64
   "Bitness of 64-bit int.")
 
+(define-error 'elkee-error "Generic Elkee error")
+
+(define-error 'elkee-unsupported-file
+  "Unsupported file, mismatched signature."
+  'elkee-error)
+
 (defun elkee-read-uint (data bitness &optional offset)
   "Read an unsigned integer of BITNESS from DATA at OFFSET."
   (let ((offset (or offset 0))
@@ -511,6 +517,103 @@ Optional argument START-POS marks position to start processing from."
         (setq decrypted-blocks (reverse decrypted-blocks))
         (setf (elkee-database-decrypted-blocks kdbx) decrypted-blocks)
         decrypted-blocks))))
+
+(defun elkee-decrypt-buffer (kdbx buff &optional delete start-pos)
+  "Decrypt .kdbx contents of BUFF into KDBX struct.
+Optional argument DELETE destroys buffer data while reading.
+Optional argument START-POS marks position to start processing from."
+  (let* ((headers (elkee-database-headers kdbx))
+         (cipher (alist-get 'cipher headers))
+         decrypted-bytes)
+    ;; should exhaust the buffer completely
+    (with-current-buffer buff
+      (save-excursion
+        (cond ((eq cipher 'aes256)
+               (elkee-aes256-decrypt-buffer kdbx buff delete start-pos))
+              (t (error "Unhandled cipher: %s" cipher)))))
+
+    (with-temp-buffer
+      (set-buffer-multibyte nil)
+      (dolist (block (elkee-database-decrypted-blocks kdbx))
+        (dolist (byte (string-to-list block)) (insert byte))
+        (when (alist-get 'compression headers)
+          (unless (zlib-decompress-region (point-min) (point-max))
+            (error "Bad decompression")))
+
+        (let (headers break new-item item-type)
+          (while (not break)
+            (setq new-item nil)
+            (goto-char (point-min))
+
+            (progn (setf (alist-get 'type new-item)
+                         (let ((type-raw (char-after)))
+                           (cond ((= type-raw #x00) 'end)
+                                 ((= type-raw #x01) 'protected-stream-id)
+                                 ((= type-raw #x02) 'protected-stream-key)
+                                 ((= type-raw #x03) 'binary)
+                                 (t (error "Unhandled type: %s" type-raw)))))
+                   (delete-char 1))
+
+            (progn
+              (let ((data-length-raw (make-vector 4 nil)) data-length data)
+                (dotimes (idx 4)
+                  (aset data-length-raw idx (char-after))
+                  (delete-char 1))
+                (setq data-length
+                      (elkee-read-uint data-length-raw elkee-32-bit))
+
+                (dotimes (idx data-length)
+                  (push (char-after) data)
+                  (delete-char 1))
+                (setq data (reverse data))
+
+                (if (eq (alist-get 'type new-item) 'protected-stream-id)
+                    (let ((stream-id
+                           (elkee-read-uint (vconcat data) elkee-32-bit)))
+                      (setq data (cond ((= stream-id #x00) 'none)
+                                       ((= stream-id #x01) 'arc4variant)
+                                       ((= stream-id #x02) 'salsa20)
+                                       ((= stream-id #x03) 'chacha20)))))
+                (setf (alist-get 'data new-item) data)))
+
+            (let ((type (alist-get 'type new-item)))
+              (when (eq type 'end) (setq break t))
+
+              (setf (alist-get (alist-get 'type new-item) headers)
+                    (alist-get 'data new-item))))
+          (setf (elkee-database-xml-headers kdbx) headers)))
+      (buffer-string))))
+
+(defun elkee-read-buffer (password keyfile)
+  "Destructively read the current buffer into a KeePass database structure.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile."
+  (let ((signature (elkee-parse-signature-buffer (current-buffer) t))
+        (kdbx (make-elkee-database))
+        version headers)
+    (unless (equal signature elkee-signature)
+      (signal 'elkee-unsupported-file signature))
+    (setq version (elkee-parse-version-buffer (current-buffer) t))
+    (setf (elkee-database-version kdbx) version)
+
+    (setq headers (elkee-parse-headers-buffer
+                   (current-buffer) (car version) (cadr version) t))
+    (setf (elkee-database-headers kdbx) headers)
+
+    (when (>= (car version) 4)
+      (setf (elkee-database-key kdbx)
+            (elkee-compute-master-key
+             (alist-get 'master-seed headers)
+             (elkee-compute-transformed-key
+              (elkee-compute-composite-key password keyfile)
+              (alist-get 'kdf-parameters headers))))
+      (delete-char (+ 32 ;; todo: header bytes checksum
+                      32 ;; todo: credentials checksum
+                      ))
+      (setf (elkee-database-xml kdbx)
+            (elkee-decrypt-buffer kdbx (current-buffer) t))
+      (setf (elkee-database-xml-unsafe kdbx) (elkee-unprotect-xml kdbx)))
+    kdbx))
 
 (provide 'elkee)
 ;;; elkee.el ends here

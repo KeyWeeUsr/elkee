@@ -387,5 +387,16 @@
                                        (car (elkee-aes256-decrypt-buffer
                                              kdbx (current-buffer) t)))))))))
 
+(ert-deftest elkee-bad-signature ()
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (let ((what '(#x00 #x00 #x00 #x00 #x00 #x00 #x00 #x00
+                  #x00 #x00 #x00 #x00 #x00 #x00 #x00 #x00)))
+      (dolist (item what)
+        (insert item))
+      (condition-case err
+          (progn (elkee-read-buffer "" nil) (should nil))
+        (error (should (eq (car err) 'elkee-unsupported-file)))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
