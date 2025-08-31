@@ -488,5 +488,59 @@
                          (insert item))
                        (buffer-string)))))))
 
+(ert-deftest elkee-kdbx4-decrypted-blocks ()
+  (let ((expected
+         (string-join
+          '("1f8b0800000000000003a5574d6fe34418eeee8250fa2bac684fac8a93b4db66"
+            "2bc74b1a3bd96cf3d5d8e976178968e2bc4ddcdae3acc7ded68bf6c6990be284"
+            "387242e2c45e1067e0823870e186b8213821fe0033fe883fe2745bb0d4d47edf"
+            "679e773cf3cc33e35b6f6d6c6cdca17fb7dfa73f671f6ffcfeeaddb7fffae9c3"
+            "4ffff9fceeb3cdf309f783f7fab7dae4eec91fad3f7ffe45fcbbf9f517df7cd0"
+            "d37abfdeaa775e7f5bfff1d99def5a5f7df9c9e13bb7bf9f999f6db04b787869"
+            "1adc0bb0896ee15ab1fc5ea9c801d6aca98e67b5e2486d6e558b1c71109e22c3"
+            "c2502b7a408a0fc54de11060800869ea06889b05a10b0ea2ff0b420b30d8c8b1"
+            "6c31449c34043e0e3288841c3441047ac80451724dd313f8542c0b6acc119ec1"
+            "547c31dfbeb73ddba9d3ab966e1221922d25209aad2f1cfa62e29455e1a67124"
+            "6e9e84ad697e75fd1ca0cf03a7c8359c11019bf590cf0b4678729022ce07b1f6"
+            "5da4630730c21a3cd2091d504f421e11b777ef0bfc9a1c6bd6b00ccbe64306e2"
+            "807d085e44fb78be97a8bd92ce6933044ddc2aaf60593807ddb46c0df2f041c2"
+            "6f0126ededc0b61cd0a2792808e1b3aa3b54624d641010f8542c898a062b035c"
+            "869358a6ca0bcb9e8aaaedc6d06534453bec6419692489e8d15f92c10431f666"
+            "7cdeab090d974e8fd9d62c4c8249a143e769061ce858c6686240d4b5d5781a3d"
+            "1ab525b19e7bd56ac9e63e30dd365f7bab79d64ac68eeda9602e0c44dfac655b"
+            "eee28ab279e8352cf99db802c8783a54470a18744061faa6beac622306d55a1c"
+            "eb44a7a37a1d8e2c9ab184abac8b2edb0e98442c97043e1b4be314fd2588bb95"
+            "07e59dfbbb49ac1f6750051c873a2f895ef7e993aab47d118d4b361b6b897951"
+            "204b56d6bf2b508bf6c471a7aea8e36e5f6a37dbb224f02c16648f91e182a8b8"
+            "989340e32a0fb8f2ee7e656fbfbcc3554a951daed555053ec0f8bcfc92385ba2"
+            "29f5c78adc18caaa32964f067d4596c6ad617f3458adf65129bcb6727ea2ebd5"
+            "35eb1e0e4e1a6389167e3a50dbfdde586d77e5f1602837e5a1dc6bc8abd5cb94"
+            "3c9f5be053c3c8966d7033b42c27d8d6a2592f08fe5adaa9424f3eb31405eea9"
+            "9de3d9594febe047174c2dd1522b08bef13006818f3dc8f7063e7c21ea003e17"
+            "ed4970eb8755dd0cec23546a97eec6a7ba86987fb09c789eb2ec5c48d0ba6143"
+            "1c4aafb1542aae55d73420644d95443268215f2e74ba5257d91389043236cae8"
+            "31488e089a41c372b123d2094a3c85fdb28217cb378b6c3698d9780c8536a1d5"
+            "e80166e9aa89800f08f7dbbaeb58aab700059ebbf40804e12405ce1b2545ec1a"
+            "0673a85430015400d9da9caed214328e6e46231d3b8a6f77d7f69f001d568c6e"
+            "43551ed7a1baf7c43b3d6ae806a9f6c9ded111deada754b9545d2925ba8240b7"
+            "63985195e3697c5aa0e103a49de784fbf4c868eb53a0db611452d18c2cef6309"
+            "ff4f0d6744dcbbdcbb52c4ff41c52919a7f9b332be5ac76f12f2aa92339dcb51"
+            "724aca747f70ec4844a10bfa7e92f0baa5b15b26709826938e47d9920c3974d1"
+            "296895910b0f3130ad15d93a2a8acff5a6070b73b2ad572bb2aed56e56c93fc3"
+            "e574bceb714e90ba091bd5610ed7dc7116fb3c6fd08135e61671f6aba56ae986"
+            "c4e10932879d7e51b02cf6b3eb39532eb1f489c88c1207bb42f8f5a1da089353"
+            "b0fb935397049260725a978a5a062e96762fda9774f9e830129a1bbfb410fa91"
+            "b63cd848f4c044e7b93f39a3f3edaf697a30f47742360a89efbe7f01e9d38397"
+            "910e0000")
+          "")))
+    (with-dummy-db 'kdbx4
+      (let* ((password "dummy")
+             (kdbx (elkee-read-buffer "dummy" nil))
+             (blocks (elkee-database-decrypted-blocks kdbx)))
+        (should (= 1 (length blocks)))
+        (should (string= expected
+                         (apply 'concat (mapcar (lambda (x) (format "%02x" x))
+                                                (car blocks)))))))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
