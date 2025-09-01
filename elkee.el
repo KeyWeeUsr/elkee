@@ -26,6 +26,7 @@
 ;; TBD
 
 ;;; Code:
+(require 'elchacha)
 
 (defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
   "Expected KDBX file signature.")
@@ -598,10 +599,44 @@ Optional argument START-POS marks position to start processing from."
          (nonce (string-to-list (substring key-hash 32 44))))
     (cons key nonce)))
 
-(defun elkee-read-buffer (password keyfile)
+(defun elkee-unprotect-xml (kdbx)
+  "Unprotect XML of KeePass database retrieved from KDBX struct."
+  (let* ((creds (elkee-unprotect-xml-get-creds kdbx))
+         (key (car creds))
+         (nonce (cdr creds))
+         (case-fold-search t)
+         (anchor " protected=\"true\"")
+         result)
+    (with-temp-buffer
+      (insert (elkee-database-xml kdbx))
+      (goto-char (point-min))
+      (catch 'done
+        (while (re-search-forward anchor nil t)
+          (replace-match "")
+          (let ((start 0) (end 0) tmp)
+            (if (re-search-forward ">" nil t)
+                (setq start (1+ (match-beginning 0)))
+              (throw 'done "Bad value start"))
+            (if (re-search-forward "</value>" nil t)
+                (setq end (match-beginning 0))
+              (throw 'done "Bad value end"))
+            (setq tmp (elchacha-encrypt-decrypt
+                       (apply 'vector key) (apply 'vector nonce)
+                       (apply 'vector (string-to-list
+                                       (base64-decode-string
+                                        (buffer-substring-no-properties
+                                         start end))))))
+            (goto-char start)
+            (delete-char (- end start))
+            (insert (base64-encode-string
+                     (apply 'string (mapcar (lambda (x) x) tmp)))))))
+      (string-replace "\11" "        " (buffer-string)))))
+
+(defun elkee-read-buffer (password keyfile &optional unprotect)
   "Destructively read the current buffer into a KeePass database structure.
 Argument PASSWORD is plaintext/string password
-Argument KEYFILE is path to a keyfile."
+Argument KEYFILE is path to a keyfile.
+Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
   (let ((signature (elkee-parse-signature-buffer (current-buffer) t))
         (kdbx (make-elkee-database))
         version headers)
@@ -626,12 +661,15 @@ Argument KEYFILE is path to a keyfile."
                       ))
       (setf (elkee-database-xml kdbx)
             (elkee-decrypt-buffer kdbx (current-buffer) t))
-    kdbx)))
+      (when unprotect
+        (setf (elkee-database-xml-unsafe kdbx) (elkee-unprotect-xml kdbx))))
+    kdbx))
 
-(defun elkee-read (filepath password keyfile)
+(defun elkee-read (filepath password keyfile &optional unprotect)
   "Read FILEPATH into a KeePass database structure.
 Argument PASSWORD is plaintext/string password
-Argument KEYFILE is path to a keyfile."
+Argument KEYFILE is path to a keyfile.
+Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
   (with-temp-buffer
     (set-buffer-multibyte nil)
     (setq-local buffer-file-coding-system 'binary)
