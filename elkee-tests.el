@@ -992,6 +992,19 @@
                      (elkee-database-xml-unsafe
                       (elkee-read-buffer "dummy" nil t))))))
 
+(ert-deftest elkee-kdbx4-unprotect-xml-file ()
+  (let ((tmp (make-temp-name "")))
+    (unwind-protect
+        (progn
+          (with-temp-file tmp
+            (set-buffer-multibyte nil)
+            (insert elkee-kdbx4-dummy)
+            (base64-decode-region (point-min) (point-max)))
+          (should (string= elkee-kdbx4-dummy-unprotected
+                           (elkee-database-xml-unsafe
+                            (elkee-read tmp "dummy" nil t)))))
+      (delete-file tmp))))
+
 (ert-deftest elkee-list-grouped-internal ()
   (with-temp-buffer
     (insert elkee-kdbx4-dummy-unprotected-multiple)

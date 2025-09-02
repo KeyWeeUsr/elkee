@@ -743,7 +743,7 @@ Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
     (set-buffer-multibyte nil)
     (setq-local buffer-file-coding-system 'binary)
     (insert-file-contents-literally filepath nil)
-    (elkee-read-buffer password keyfile)))
+    (elkee-read-buffer password keyfile unprotect)))
 
 (provide 'elkee)
 ;;; elkee.el ends here
