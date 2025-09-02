@@ -164,6 +164,273 @@
 </KeePassFile>
 ")
 
+(defconst elkee-kdbx4-dummy-unprotected-multiple
+  "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>
+<KeePassFile>
+        <Meta>
+                <Generator>KeePassXC</Generator>
+                <DatabaseName>Dummy</DatabaseName>
+                <DatabaseNameChanged>vh3+3g4AAAA=</DatabaseNameChanged>
+                <DatabaseDescription>dummy description</DatabaseDescription>
+                <DatabaseDescriptionChanged>vh3+3g4AAAA=</DatabaseDescriptionChanged>
+                <DefaultUserName/>
+                <DefaultUserNameChanged>sB3+3g4AAAA=</DefaultUserNameChanged>
+                <MaintenanceHistoryDays>365</MaintenanceHistoryDays>
+                <Color/>
+                <MasterKeyChanged>Jh7+3g4AAAA=</MasterKeyChanged>
+                <MasterKeyChangeRec>-1</MasterKeyChangeRec>
+                <MasterKeyChangeForce>-1</MasterKeyChangeForce>
+                <MemoryProtection>
+                        <ProtectTitle>False</ProtectTitle>
+                        <ProtectUserName>False</ProtectUserName>
+                        <ProtectPassword>True</ProtectPassword>
+                        <ProtectURL>False</ProtectURL>
+                        <ProtectNotes>False</ProtectNotes>
+                </MemoryProtection>
+                <CustomIcons/>
+                <RecycleBinEnabled>True</RecycleBinEnabled>
+                <RecycleBinUUID>AAAAAAAAAAAAAAAAAAAAAA==</RecycleBinUUID>
+                <RecycleBinChanged>sB3+3g4AAAA=</RecycleBinChanged>
+                <EntryTemplatesGroup>AAAAAAAAAAAAAAAAAAAAAA==</EntryTemplatesGroup>
+                <EntryTemplatesGroupChanged>sB3+3g4AAAA=</EntryTemplatesGroupChanged>
+                <LastSelectedGroup>AAAAAAAAAAAAAAAAAAAAAA==</LastSelectedGroup>
+                <LastTopVisibleGroup>AAAAAAAAAAAAAAAAAAAAAA==</LastTopVisibleGroup>
+                <HistoryMaxItems>10</HistoryMaxItems>
+                <HistoryMaxSize>6291456</HistoryMaxSize>
+                <SettingsChanged>YW8D3w4AAAA=</SettingsChanged>
+                <CustomData>
+                        <Item>
+                                <Key>_LAST_MODIFIED</Key>
+                                <Value>Sun Dec 29 16:27:14 2024 GMT</Value>
+                        </Item>
+                        <Item>
+                                <Key>FDO_SECRETS_EXPOSED_GROUP</Key>
+                                <Value>{00000000-0000-0000-0000-000000000000}</Value>
+                        </Item>
+                        <Item>
+                                <Key>KPXC_DECRYPTION_TIME_PREFERENCE</Key>
+                                <Value>1000</Value>
+                        </Item>
+                </CustomData>
+        </Meta>
+        <Root>
+                <Group>
+                        <UUID>48eNEjoSSe+TLVgjNcLnHw==</UUID>
+                        <Name>Root</Name>
+                        <Notes/>
+                        <IconID>48</IconID>
+                        <Times>
+                                <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                <CreationTime>sB3+3g4AAAA=</CreationTime>
+                                <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                <ExpiryTime>sB3+3g4AAAA=</ExpiryTime>
+                                <Expires>False</Expires>
+                                <UsageCount>0</UsageCount>
+                                <LocationChanged>sB3+3g4AAAA=</LocationChanged>
+                        </Times>
+                        <IsExpanded>True</IsExpanded>
+                        <DefaultAutoTypeSequence/>
+                        <EnableAutoType>null</EnableAutoType>
+                        <EnableSearching>null</EnableSearching>
+                        <LastTopVisibleEntry>AAAAAAAAAAAAAAAAAAAAAA==</LastTopVisibleEntry>
+                        <Entry>
+                                <UUID>VAe87WyfQCils8Os7QQn6A==</UUID>
+                                <IconID>0</IconID>
+                                <ForegroundColor/>
+                                <BackgroundColor/>
+                                <OverrideURL/>
+                                <Tags/>
+                                <Times>
+                                        <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                        <CreationTime>Nx7+3g4AAAA=</CreationTime>
+                                        <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                        <ExpiryTime>Nx7+3g4AAAA=</ExpiryTime>
+                                        <Expires>False</Expires>
+                                        <UsageCount>0</UsageCount>
+                                        <LocationChanged>kh7+3g4AAAA=</LocationChanged>
+                                </Times>
+                                <String>
+                                        <Key>Notes</Key>
+                                        <Value>Some note</Value>
+                                </String>
+                                <String>
+                                        <Key>Password</Key>
+                                        <Value>TXlfUGFzc3dvcmQ=</Value>
+                                </String>
+                                <String>
+                                        <Key>Title</Key>
+                                        <Value>My title</Value>
+                                </String>
+                                <String>
+                                        <Key>URL</Key>
+                                        <Value>http://localhost:8080</Value>
+                                </String>
+                                <String>
+                                        <Key>UserName</Key>
+                                        <Value>my Username</Value>
+                                </String>
+                                <AutoType>
+                                        <Enabled>True</Enabled>
+                                        <DataTransferObfuscation>0</DataTransferObfuscation>
+                                        <DefaultSequence/>
+                                </AutoType>
+                                <History/>
+                        </Entry>
+                        <Entry>
+                                <UUID>VAe87WyfQCils8Os7QQn6A==</UUID>
+                                <IconID>0</IconID>
+                                <ForegroundColor/>
+                                <BackgroundColor/>
+                                <OverrideURL/>
+                                <Tags/>
+                                <Times>
+                                        <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                        <CreationTime>Nx7+3g4AAAA=</CreationTime>
+                                        <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                        <ExpiryTime>Nx7+3g4AAAA=</ExpiryTime>
+                                        <Expires>False</Expires>
+                                        <UsageCount>0</UsageCount>
+                                        <LocationChanged>kh7+3g4AAAA=</LocationChanged>
+                                </Times>
+                                <String>
+                                        <Key>Notes</Key>
+                                        <Value>Some note</Value>
+                                </String>
+                                <String>
+                                        <Key>Password</Key>
+                                        <Value>TXlfUGFzc3dvcmQ=</Value>
+                                </String>
+                                <String>
+                                        <Key>Title</Key>
+                                        <Value>My title 2</Value>
+                                </String>
+                                <String>
+                                        <Key>URL</Key>
+                                        <Value>http://localhost:8080</Value>
+                                </String>
+                                <String>
+                                        <Key>UserName</Key>
+                                        <Value>my Username</Value>
+                                </String>
+                                <AutoType>
+                                        <Enabled>True</Enabled>
+                                        <DataTransferObfuscation>0</DataTransferObfuscation>
+                                        <DefaultSequence/>
+                                </AutoType>
+                                <History/>
+                        </Entry>
+                </Group>
+                <Group>
+                        <UUID>48eNEjoSSe+TLVgjNcLnHw==</UUID>
+                        <Name>Root 2</Name>
+                        <Notes/>
+                        <IconID>48</IconID>
+                        <Times>
+                                <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                <CreationTime>sB3+3g4AAAA=</CreationTime>
+                                <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                <ExpiryTime>sB3+3g4AAAA=</ExpiryTime>
+                                <Expires>False</Expires>
+                                <UsageCount>0</UsageCount>
+                                <LocationChanged>sB3+3g4AAAA=</LocationChanged>
+                        </Times>
+                        <IsExpanded>True</IsExpanded>
+                        <DefaultAutoTypeSequence/>
+                        <EnableAutoType>null</EnableAutoType>
+                        <EnableSearching>null</EnableSearching>
+                        <LastTopVisibleEntry>AAAAAAAAAAAAAAAAAAAAAA==</LastTopVisibleEntry>
+                        <Entry>
+                                <UUID>VAe87WyfQCils8Os7QQn6A==</UUID>
+                                <IconID>0</IconID>
+                                <ForegroundColor/>
+                                <BackgroundColor/>
+                                <OverrideURL/>
+                                <Tags/>
+                                <Times>
+                                        <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                        <CreationTime>Nx7+3g4AAAA=</CreationTime>
+                                        <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                        <ExpiryTime>Nx7+3g4AAAA=</ExpiryTime>
+                                        <Expires>False</Expires>
+                                        <UsageCount>0</UsageCount>
+                                        <LocationChanged>kh7+3g4AAAA=</LocationChanged>
+                                </Times>
+                                <String>
+                                        <Key>Notes</Key>
+                                        <Value>Some note</Value>
+                                </String>
+                                <String>
+                                        <Key>Password</Key>
+                                        <Value>TXlfUGFzc3dvcmQ=</Value>
+                                </String>
+                                <String>
+                                        <Key>Title</Key>
+                                        <Value>My title 3</Value>
+                                </String>
+                                <String>
+                                        <Key>URL</Key>
+                                        <Value>http://localhost:8080</Value>
+                                </String>
+                                <String>
+                                        <Key>UserName</Key>
+                                        <Value>my Username</Value>
+                                </String>
+                                <AutoType>
+                                        <Enabled>True</Enabled>
+                                        <DataTransferObfuscation>0</DataTransferObfuscation>
+                                        <DefaultSequence/>
+                                </AutoType>
+                                <History/>
+                        </Entry>
+                        <Entry>
+                                <UUID>VAe87WyfQCils8Os7QQn6A==</UUID>
+                                <IconID>0</IconID>
+                                <ForegroundColor/>
+                                <BackgroundColor/>
+                                <OverrideURL/>
+                                <Tags/>
+                                <Times>
+                                        <LastModificationTime>kh7+3g4AAAA=</LastModificationTime>
+                                        <CreationTime>Nx7+3g4AAAA=</CreationTime>
+                                        <LastAccessTime>kh7+3g4AAAA=</LastAccessTime>
+                                        <ExpiryTime>Nx7+3g4AAAA=</ExpiryTime>
+                                        <Expires>False</Expires>
+                                        <UsageCount>0</UsageCount>
+                                        <LocationChanged>kh7+3g4AAAA=</LocationChanged>
+                                </Times>
+                                <String>
+                                        <Key>Notes</Key>
+                                        <Value>Some note</Value>
+                                </String>
+                                <String>
+                                        <Key>Password</Key>
+                                        <Value>TXlfUGFzc3dvcmQ=</Value>
+                                </String>
+                                <String>
+                                        <Key>Title</Key>
+                                        <Value>My title 4</Value>
+                                </String>
+                                <String>
+                                        <Key>URL</Key>
+                                        <Value>http://localhost:8080</Value>
+                                </String>
+                                <String>
+                                        <Key>UserName</Key>
+                                        <Value>my Username</Value>
+                                </String>
+                                <AutoType>
+                                        <Enabled>True</Enabled>
+                                        <DataTransferObfuscation>0</DataTransferObfuscation>
+                                        <DefaultSequence/>
+                                </AutoType>
+                                <History/>
+                        </Entry>
+                </Group>
+                <DeletedObjects/>
+        </Root>
+</KeePassFile>
+")
+
 (defmacro with-dummy-db (db &rest body)
   (declare (indent 1) (debug t))
   `(with-temp-buffer
@@ -724,6 +991,37 @@
     (should (string= elkee-kdbx4-dummy-unprotected
                      (elkee-database-xml-unsafe
                       (elkee-read-buffer "dummy" nil t))))))
+
+(ert-deftest elkee-list-grouped-internal ()
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (let ((result (elkee--list-creds-grouped (libxml-parse-xml-region))))
+      (should (equal '(Root\ 2 Root) (mapcar 'car result)))
+      (should (= 2 (length (alist-get 'Root\ 2 result))))
+      (should (= 2 (length (alist-get 'Root result))))
+      (should (equal '((Root\ 2
+                        (:notes "Some note"
+                         :password "My_Password"
+                         :title "My title 4"
+                         :url "http://localhost:8080"
+                         :username "my Username")
+                        (:notes "Some note"
+                         :password "My_Password"
+                         :title "My title 3"
+                         :url "http://localhost:8080"
+                         :username "my Username"))
+                       (Root
+                        (:notes "Some note"
+                         :password "My_Password"
+                         :title "My title 2"
+                         :url "http://localhost:8080"
+                         :username "my Username")
+                        (:notes "Some note"
+                         :password "My_Password"
+                         :title "My title"
+                         :url "http://localhost:8080"
+                         :username "my Username")))
+                     result)))))
 
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
