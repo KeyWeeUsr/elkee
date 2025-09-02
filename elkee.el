@@ -717,6 +717,23 @@ Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
                       result)))))))
     result))
 
+(defun elkee-list-creds-buffer (buffer password keyfile &rest opts)
+  "Destructively read BUFFER to retrieve KeePass creds from.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile.
+Optional argument OPTS is a plist with options:
+
+OPTS:
+* :group - when non-nil returns ALIST ((group (entry) (entry2)) ...)"
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert (elkee-database-xml-unsafe
+             (with-current-buffer buffer
+               (elkee-read-buffer password keyfile t))))
+    (cond ((plist-get opts :group)
+           (elkee--list-creds-grouped (libxml-parse-xml-region)))
+          (t (elkee--list-creds-flat (libxml-parse-xml-region))))))
+
 (defun elkee-read (filepath password keyfile &optional unprotect)
   "Read FILEPATH into a KeePass database structure.
 Argument PASSWORD is plaintext/string password

@@ -1053,5 +1053,31 @@
                         :group "Root"))
                      result)))))
 
+(ert-deftest elkee-list-creds-flat ()
+  (with-dummy-db 'kdbx4
+    (let ((result (elkee-list-creds-buffer (current-buffer) "dummy" nil)))
+      (should (equal '((:notes "Some note"
+                        :password "My_Password"
+                        :title "My title"
+                        :url "http://localhost:8080"
+                        :username "my Username"
+                        :group "Root"))
+                     result)))))
+
+(ert-deftest elkee-list-creds-grouped ()
+  (with-dummy-db 'kdbx4
+    (let ((result (elkee-list-creds-buffer
+                   (current-buffer) "dummy" nil
+                   :group t)))
+      (should (equal '(Root) (mapcar 'car result)))
+      (should (equal '((Root
+                        (:notes "Some note"
+                         :password "My_Password"
+                         :title "My title"
+                         :url "http://localhost:8080"
+                         :username "my Username")))
+                     result)))))
+
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
