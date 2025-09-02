@@ -1023,5 +1023,35 @@
                          :username "my Username")))
                      result)))))
 
+(ert-deftest elkee-list-flat-internal ()
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (let ((result (elkee--list-creds-flat (libxml-parse-xml-region))))
+      (should (equal '((:notes "Some note"
+                        :password "My_Password"
+                        :title "My title 4"
+                        :url "http://localhost:8080"
+                        :username "my Username"
+                        :group "Root 2")
+                       (:notes "Some note"
+                        :password "My_Password"
+                        :title "My title 3"
+                        :url "http://localhost:8080"
+                        :username "my Username"
+                        :group "Root 2")
+                       (:notes "Some note"
+                        :password "My_Password"
+                        :title "My title 2"
+                        :url "http://localhost:8080"
+                        :username "my Username"
+                        :group "Root")
+                       (:notes "Some note"
+                        :password "My_Password"
+                        :title "My title"
+                        :url "http://localhost:8080"
+                        :username "my Username"
+                        :group "Root"))
+                     result)))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
