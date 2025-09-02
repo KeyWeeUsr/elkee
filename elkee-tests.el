@@ -1077,6 +1077,24 @@
                         :group "Root"))
                      result)))))
 
+(ert-deftest elkee-list-creds-flat-file ()
+  (let ((tmp (make-temp-name "")))
+    (unwind-protect
+        (progn
+          (with-temp-file tmp
+            (set-buffer-multibyte nil)
+            (insert elkee-kdbx4-dummy)
+            (base64-decode-region (point-min) (point-max)))
+          (let ((result (elkee-list-creds tmp "dummy" nil)))
+            (should (equal '((:notes "Some note"
+                              :password "My_Password"
+                              :title "My title"
+                              :url "http://localhost:8080"
+                              :username "my Username"
+                              :group "Root"))
+                           result))))
+      (delete-file tmp))))
+
 (ert-deftest elkee-list-creds-grouped ()
   (with-dummy-db 'kdbx4
     (let ((result (elkee-list-creds-buffer
@@ -1091,6 +1109,23 @@
                          :username "my Username")))
                      result)))))
 
+(ert-deftest elkee-list-creds-grouped-file ()
+  (let ((tmp (make-temp-name "")))
+    (unwind-protect
+        (progn
+          (with-temp-file tmp
+            (set-buffer-multibyte nil)
+            (insert elkee-kdbx4-dummy)
+            (base64-decode-region (point-min) (point-max)))
+          (let ((result (elkee-list-creds tmp "dummy" nil :group t)))
+            (should (equal '((Root
+                              (:notes "Some note"
+                               :password "My_Password"
+                               :title "My title"
+                               :url "http://localhost:8080"
+                               :username "my Username")))
+                           result))))
+      (delete-file tmp))))
 
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here

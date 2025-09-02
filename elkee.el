@@ -745,5 +745,21 @@ Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
     (insert-file-contents-literally filepath nil)
     (elkee-read-buffer password keyfile unprotect)))
 
+(defun elkee-list-creds (filepath password keyfile &rest opts)
+  "Read FILEPATH to retrieve KeePass creds from.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile.
+Optional argument OPTS is a plist with options:
+
+OPTS:
+* :group - when non-nil returns ALIST ((group (entry) (entry2)) ...)"
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert (elkee-database-xml-unsafe
+             (elkee-read filepath password keyfile t)))
+    (cond ((plist-get opts :group)
+           (elkee--list-creds-grouped (libxml-parse-xml-region)))
+          (t (elkee--list-creds-flat (libxml-parse-xml-region))))))
+
 (provide 'elkee)
 ;;; elkee.el ends here
