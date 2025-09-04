@@ -817,5 +817,27 @@ SELECTORS:
                (elkee-read-buffer password keyfile t))))
     (apply 'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
 
+(defun elkee-find-creds (filepath password keyfile &rest selectors)
+  "Read FILEPATH to find KeePass creds in.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile.
+Optional argument SELECTORS is a plist with keys.
+
+On a selector, if specified alone, returns all matching entries, and if
+specified in combination with other selectors, narrows the selection down.
+
+A selector is a regexp passed into `string-match'.
+
+SELECTORS:
+* :group
+* :title
+* :username
+* :url"
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert (elkee-database-xml-unsafe
+             (elkee-read filepath password keyfile t)))
+    (apply 'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
+
 (provide 'elkee)
 ;;; elkee.el ends here

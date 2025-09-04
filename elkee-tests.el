@@ -1252,5 +1252,22 @@
                     (current-buffer) "dummy" nil
                     :group "Ro" :title "my")))))
 
+(ert-deftest elkee-find-file ()
+  (let ((tmp (make-temp-name "")))
+    (unwind-protect
+        (progn
+          (with-temp-file tmp
+            (set-buffer-multibyte nil)
+            (insert elkee-kdbx4-dummy)
+            (base64-decode-region (point-min) (point-max)))
+          (should (equal '((:notes "Some note"
+                            :password "My_Password"
+                            :title "My title"
+                            :url "http://localhost:8080"
+                            :username "my Username"
+                            :group "Root"))
+                         (elkee-find-creds tmp "dummy" nil :title "My"))))
+      (delete-file tmp))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
