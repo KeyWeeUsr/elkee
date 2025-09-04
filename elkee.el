@@ -669,52 +669,55 @@ Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
   "Parse credentials as alist from unprotected KeePass XML document."
   (let (result)
     (dolist (group (cdr-safe (alist-get 'Root xml)))
-      (when-let* ((group-name (car-safe (cdr-safe (alist-get 'Name group)))))
-        (dolist (entry group)
-          (when (eq 'Entry (car-safe entry))
-            (let (entry-item)
-              (dolist (string entry)
-                (when (eq 'String (car-safe string))
-                  (let ((name (car-safe (cdr-safe (alist-get 'Key string)))))
-                    (setq entry-item
-                          (plist-put entry-item
-                                     (intern (format ":%s" (downcase name)))
-                                     (let ((value
-                                            (car-safe
-                                             (cdr-safe
-                                              (alist-get 'Value string)))))
-                                       (if (string= "Password" name)
-                                           (base64-decode-string value)
-                                         value)))))))
-              (when entry-item
-                (push entry-item (alist-get (intern group-name) result))))))))
+      (let ((group-name (car-safe (cdr-safe (alist-get 'Name group)))))
+        (when group-name
+          (dolist (entry group)
+            (when (eq 'Entry (car-safe entry))
+              (let (entry-item)
+                (dolist (string entry)
+                  (when (eq 'String (car-safe string))
+                    (let ((name (car-safe (cdr-safe (alist-get 'Key string)))))
+                      (setq entry-item
+                            (plist-put entry-item
+                                       (intern (format ":%s" (downcase name)))
+                                       (let ((value
+                                              (car-safe
+                                               (cdr-safe
+                                                (alist-get 'Value string)))))
+                                         (if (string= "Password" name)
+                                             (base64-decode-string value)
+                                           value)))))))
+                (when entry-item
+                  (push entry-item
+                        (alist-get (intern group-name) result)))))))))
     result))
 
 (defun elkee--list-creds-flat (xml)
   "Parse credentials as flat list from unprotected KeePass XML document."
   (let (result)
     (dolist (group (cdr-safe (alist-get 'Root xml)))
-      (when-let* ((group-name (car-safe (cdr-safe (alist-get 'Name group)))))
-        (dolist (entry group)
-          (when (eq 'Entry (car-safe entry))
-            (let (entry-item)
-              (dolist (string entry)
-                (when (eq 'String (car-safe string))
-                  (let ((name (car-safe (cdr-safe (alist-get 'Key string)))))
-                    (setq entry-item
-                          (plist-put entry-item
-                                     (intern (format ":%s" (downcase name)))
-                                     (let ((value
-                                            (car-safe
-                                             (cdr-safe
-                                              (alist-get 'Value string)))))
-                                       (if (string= "Password" name)
-                                           (base64-decode-string value)
-                                         value)))))))
-              (when entry-item
-                (push (setq entry-item
-                            (plist-put entry-item :group group-name))
-                      result)))))))
+      (let ((group-name (car-safe (cdr-safe (alist-get 'Name group)))))
+        (when group-name
+          (dolist (entry group)
+            (when (eq 'Entry (car-safe entry))
+              (let (entry-item)
+                (dolist (string entry)
+                  (when (eq 'String (car-safe string))
+                    (let ((name (car-safe (cdr-safe (alist-get 'Key string)))))
+                      (setq entry-item
+                            (plist-put entry-item
+                                       (intern (format ":%s" (downcase name)))
+                                       (let ((value
+                                              (car-safe
+                                               (cdr-safe
+                                                (alist-get 'Value string)))))
+                                         (if (string= "Password" name)
+                                             (base64-decode-string value)
+                                           value)))))))
+                (when entry-item
+                  (push (setq entry-item
+                              (plist-put entry-item :group group-name))
+                        result))))))))
     result))
 
 (defun elkee-list-creds-buffer (buffer password keyfile &rest opts)
