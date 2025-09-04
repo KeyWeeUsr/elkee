@@ -720,6 +720,36 @@ Optional argument UNPROTECT stores unsafe, unprotected data in KDBX struct."
                         result))))))))
     result))
 
+(defun elkee--find-creds (xml &rest selectors)
+  "Parse credentials as flat list from unprotected KeePass XML document.
+Optional argument SELECTORS is a plist with keys.
+
+On a selector, if specified alone, returns all matching entries, and if
+specified in combination with other selectors, narrows the selection down.
+
+A selector is a regexp passed into `string-match'.
+
+SELECTORS:
+* :group
+* :title
+* :username
+* :url"
+  (let ((include 0) (required 0)
+        (keys '(:group :title :username :url))
+        result)
+    (dolist (key keys)
+      (when (plist-member selectors key)
+        (setq required (1+ required))))
+    (dolist (item (elkee--list-creds-flat xml))
+      (setq include 0)
+      (dolist (key keys)
+        (let* ((group (plist-get selectors key)))
+          (when (and group (string-match-p group (or (plist-get item key) "")))
+            (setq include (1+ include)))))
+      (when (>= include required)
+        (setq result (push item result))))
+    result))
+
 (defun elkee-list-creds-buffer (buffer password keyfile &rest opts)
   "Destructively read BUFFER to retrieve KeePass creds from.
 Argument PASSWORD is plaintext/string password

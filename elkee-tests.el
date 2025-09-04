@@ -1127,5 +1127,98 @@
                            result))))
       (delete-file tmp))))
 
+(ert-deftest elkee-find-internal ()
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 3"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root 2")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 4"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root 2"))
+                   (elkee--find-creds
+                    (libxml-parse-xml-region) :group "Root 2"))))
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 2"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee--find-creds
+                    (libxml-parse-xml-region) :group "Root$"))))
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee--find-creds
+                    (libxml-parse-xml-region)
+                    :group "Root$" :title "My title$"))))
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 2"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 3"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root 2")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 4"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root 2"))
+                   (elkee--find-creds
+                    (libxml-parse-xml-region)
+                    :url "localhost" :username "Username"
+                    :title "My" :group "Root"))))
+  (with-temp-buffer
+    (insert elkee-kdbx4-dummy-unprotected-multiple)
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root")
+                     (:notes "Some note"
+                      :password "My_Password"
+                      :title "My title 2"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee--find-creds
+                    (libxml-parse-xml-region)
+                    :url "localhost" :username "Username"
+                    :title "My" :group "Root$")))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
