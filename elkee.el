@@ -794,5 +794,28 @@ OPTS:
            (elkee--list-creds-grouped (libxml-parse-xml-region)))
           (t (elkee--list-creds-flat (libxml-parse-xml-region))))))
 
+(defun elkee-find-creds-buffer (buffer password keyfile &rest selectors)
+  "Destructively read BUFFER to find KeePass creds in.
+Argument PASSWORD is plaintext/string password
+Argument KEYFILE is path to a keyfile.
+Optional argument SELECTORS is a plist with keys.
+
+On a selector, if specified alone, returns all matching entries, and if
+specified in combination with other selectors, narrows the selection down.
+
+A selector is a regexp passed into `string-match'.
+
+SELECTORS:
+* :group
+* :title
+* :username
+* :url"
+  (with-temp-buffer
+    (set-buffer-multibyte nil)
+    (insert (elkee-database-xml-unsafe
+             (with-current-buffer buffer
+               (elkee-read-buffer password keyfile t))))
+    (apply 'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
+
 (provide 'elkee)
 ;;; elkee.el ends here

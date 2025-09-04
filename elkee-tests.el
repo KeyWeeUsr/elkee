@@ -1220,5 +1220,37 @@
                     :url "localhost" :username "Username"
                     :title "My" :group "Root$")))))
 
+(ert-deftest elkee-find-buffer ()
+  (with-dummy-db 'kdbx4
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee-find-creds-buffer
+                    (current-buffer) "dummy" nil
+                    :group "Ro" :title "My"))))
+  (with-dummy-db 'kdbx4
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee-find-creds-buffer
+                    (current-buffer) "dummy" nil
+                    :group "ro" :title "My"))))
+  (with-dummy-db 'kdbx4
+    (should (equal '((:notes "Some note"
+                      :password "My_Password"
+                      :title "My title"
+                      :url "http://localhost:8080"
+                      :username "my Username"
+                      :group "Root"))
+                   (elkee-find-creds-buffer
+                    (current-buffer) "dummy" nil
+                    :group "Ro" :title "my")))))
+
 (provide 'elkee-tests)
 ;;; elkee-tests.el ends here
