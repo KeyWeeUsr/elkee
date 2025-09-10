@@ -461,7 +461,8 @@ Optional argument START-POS marks position to start processing from."
                 (push (char-after) block-data)
                 (forward-char 1))
               (push (reverse block-data) blocks)))
-          (delete-region (point-min) (point)))))
+          (when delete
+            (delete-region (point-min) (point))))))
     (setq blocks (reverse blocks))
     blocks))
 
