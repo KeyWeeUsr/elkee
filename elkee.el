@@ -121,7 +121,7 @@ Optional argument START-POS marks position to start processing from."
       (let* ((size (/ elkee-16-bit elkee-byte))
              (minor-bytes (make-vector size nil))
              (major-bytes (make-vector size nil))
-             last-pos version)
+             version)
         (goto-char start-pos)
         (dotimes (idx size)
           (aset minor-bytes idx (char-after))
@@ -146,6 +146,7 @@ Argument MIN specifies KDBX minor version.
 Optional argument DELETE destroys buffer data while reading.
 Optional argument START-POS marks position to start processing from.
 Ref: VS2022/KeePassLib/Serialization/KdbxFile.Read.cs#L319."
+  (ignore min)
   (let (headers)
     (let* ((size (if (>= maj 4)
                      (/ elkee-32-bit elkee-byte)
@@ -265,7 +266,7 @@ Ref: VS2022/KeePassLib/Serialization/KdbxFile.Read.cs#L319."
                          (delete-char 1))
                        (setq key-length
                              (elkee-read-uint key-length-raw elkee-32-bit))
-                       (dotimes (idx key-length)
+                       (dotimes (_ key-length)
                          (push (char-after) key)
                          (delete-char 1))
                        (setq item-key (concat (reverse key)))
@@ -279,7 +280,7 @@ Ref: VS2022/KeePassLib/Serialization/KdbxFile.Read.cs#L319."
                          (delete-char 1))
                        (setq val-length
                              (elkee-read-uint val-length-raw elkee-32-bit))
-                       (dotimes (idx val-length)
+                       (dotimes (_ val-length)
                          (push (char-after) val)
                          (delete-char 1))
                        (setq val (reverse val))
@@ -508,8 +509,7 @@ Optional argument START-POS marks position to start processing from."
 Optional argument DELETE destroys buffer data while reading.
 Optional argument START-POS marks position to start processing from."
   (let* ((headers (elkee-database-headers kdbx))
-         (cipher (alist-get 'cipher headers))
-         decrypted-bytes)
+         (cipher (alist-get 'cipher headers)))
     ;; should exhaust the buffer completely
     (with-current-buffer buff
       (save-excursion
@@ -525,7 +525,7 @@ Optional argument START-POS marks position to start processing from."
           (unless (zlib-decompress-region (point-min) (point-max))
             (error "Bad decompression")))
 
-        (let (headers break new-item item-type)
+        (let (headers break new-item)
           (while (not break)
             (setq new-item nil)
             (goto-char (point-min))
@@ -547,7 +547,7 @@ Optional argument START-POS marks position to start processing from."
                 (setq data-length
                       (elkee-read-uint data-length-raw elkee-32-bit))
 
-                (dotimes (idx data-length)
+                (dotimes (_ data-length)
                   (push (char-after) data)
                   (delete-char 1))
                 (setq data (reverse data))
@@ -589,8 +589,7 @@ Optional argument START-POS marks position to start processing from."
          (key (car creds))
          (nonce (cdr creds))
          (case-fold-search t)
-         (anchor " protected=\"true\"")
-         result)
+         (anchor " protected=\"true\""))
     (with-temp-buffer
       (insert (elkee-database-xml kdbx))
       (goto-char (point-min))
