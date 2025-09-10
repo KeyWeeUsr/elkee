@@ -398,18 +398,6 @@ KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
           (with-temp-buffer
             (set-buffer-multibyte nil)
             (insert composite-key)
-            (should (string= (string-join
-                              '("1a2a45fb72ab2d3a465a49675921b7e1"
-                                "2a36ca3aa06e4060278ac1046354da9d") "")
-                             (apply 'concat
-                                    (mapcar (lambda (x) (format "%02x" x))
-                                            (buffer-string)))))
-            (should (string= (string-join
-                              '("24d289f7e6b8eee20af911f30ba2fc3d"
-                                "d7f6ef422e25a37063391c8c26770244") "")
-                             (apply 'concat
-                                    (mapcar (lambda (x) (format "%02x" x))
-                                            (alist-get 'S kdf-parameters)))))
             (with-temp-file wrapper
               (insert elkee-script-argon2))
             (setq proc-status
