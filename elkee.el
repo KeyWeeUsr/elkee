@@ -5,7 +5,7 @@
 ;; Author: Peter Badida <keyweeusr@gmail.com>
 ;; Keywords: convenience, keepass, client
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (kaesar "20230626.2314"))
 ;; Homepage: https://github.com/KeyWeeUsr/elkee
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 
 ;;; Code:
 (require 'elchacha)
+(require 'kaesar)
 
 (defconst elkee-signature [#x03 #xD9 #xA2 #x9A #x67 #xFB #x4B #xB5]
   "Expected KDBX file signature.")
@@ -486,18 +487,9 @@ Optional argument START-POS marks position to start processing from."
 
 (defun elkee-aes256-decrypt-block (key iv data)
   "Decrypt AES256-CBC-encrypted DATA block with KEY and IV."
-  (with-temp-buffer
-    (set-buffer-multibyte nil)
-    (dolist (byte data) (insert byte))
-    (call-process-region
-     (point-min) (point-max)
-     ;; Note: openssl decryption handles the data padding
-     "openssl" t (current-buffer) nil
-     "enc" "-d" "-aes-256-cbc"
-     "-in" "-" "-out" "-"
-     "-K" (apply 'concat (mapcar (lambda (x) (format "%02x" x)) key))
-     "-iv" (apply 'concat (mapcar (lambda (x) (format "%02x" x)) iv)))
-    (buffer-string)))
+  (apply 'string (kaesar--cbc-decrypt
+                  (vconcat data) (kaesar--expand-to-block-key (vconcat key))
+                  (vconcat iv))))
 
 (defun elkee-aes256-decrypt-buffer (kdbx buff &optional delete start-pos)
   "Decrypt AES256-encrypted .kdbx contents of BUFF into KDBX struct.

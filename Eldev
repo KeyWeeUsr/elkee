@@ -3,9 +3,10 @@
 ;; Uncomment some calls below as needed for your project.
 ;(eldev-use-package-archive 'gnu-elpa)
 ;(eldev-use-package-archive 'nongnu-elpa)
-;(eldev-use-package-archive 'melpa)
+(eldev-use-package-archive 'melpa)
 (eldev-add-extra-dependencies 'test 'elchacha)
 (eldev-use-vc-repository 'elchacha :github "KeyWeeUsr/elchacha")
+(eldev-add-extra-dependencies 'test 'kaesar)
 
 (eldev-use-plugin 'autoloads)
 (eldev-use-plugin 'undercover)
