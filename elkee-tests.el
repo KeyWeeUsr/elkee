@@ -471,9 +471,9 @@
                    :data ,(make-vector 1 nil) :result nil
                    :error wrong-type-argument
                    :error-args
-                   ((,elkee-16-bit . (number-or-marker-p nil))
-                    (,elkee-32-bit . (number-or-marker-p nil))
-                    (,elkee-64-bit . (number-or-marker-p nil))))
+                   ((,elkee-16-bit . (integerp nil))
+                    (,elkee-32-bit . (integerp nil))
+                    (,elkee-64-bit . (integerp nil))))
                   (:name "Check vector 1"
                    :data ,(make-vector 1 0) :result nil
                    :error args-out-of-range

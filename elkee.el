@@ -120,11 +120,8 @@
   (let ((offset (or offset 0))
         (result 0))
     (dotimes (idx (/ bitness elkee-byte))
-      (setq result
-            ;; todo: lsh -> ash crashes tests
-            (+ result (with-no-warnings
-                        (lsh (aref data (+ idx offset))
-                             (* idx elkee-byte))))))
+      (setq result (+ result (ash (aref data (+ idx offset))
+                                  (* idx elkee-byte)))))
     result))
 
 (defun elkee-read-sint (data bitness &optional offset)
