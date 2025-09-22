@@ -415,12 +415,12 @@ KDF-PARAMETERS' keys for KeePass KDBX 4 (Argon2d):
                   (lambda (item)
                     (format "%s=%s" (car item) (cdr item)))
                   `((ARGON_KEY
-                     . ,(apply 'concat
+                     . ,(apply #'concat
                                (mapcar (lambda (x)
                                          (format "%02x" x))
                                        composite-key)))
                     (ARGON_SALT
-                     . ,(apply 'concat
+                     . ,(apply #'concat
                                (mapcar (lambda (x)
                                          (format "%02x" x))
                                        (alist-get 'S kdf-parameters))))
@@ -521,9 +521,9 @@ Optional argument START-POS marks position to start processing from."
 
 (defun elkee-aes256-decrypt-block (key iv data)
   "Decrypt AES256-CBC-encrypted DATA block with KEY and IV."
-  (apply 'string (kaesar--cbc-decrypt
-                  (vconcat data) (kaesar--expand-to-block-key (vconcat key))
-                  (vconcat iv))))
+  (apply #'string (kaesar--cbc-decrypt
+                   (vconcat data) (kaesar--expand-to-block-key (vconcat key))
+                   (vconcat iv))))
 
 (defun elkee-aes256-decrypt-buffer (kdbx buff &optional delete start-pos)
   "Decrypt AES256-encrypted .kdbx contents of BUFF into KDBX struct.
@@ -645,15 +645,15 @@ Optional argument START-POS marks position to start processing from."
                 (setq end (match-beginning 0))
               (throw 'done "Bad value end"))
             (setq tmp (elchacha-encrypt-decrypt
-                       (apply 'vector key) (apply 'vector nonce)
-                       (apply 'vector (string-to-list
-                                       (base64-decode-string
-                                        (buffer-substring-no-properties
-                                         start end))))))
+                       (apply #'vector key) (apply #'vector nonce)
+                       (apply #'vector (string-to-list
+                                        (base64-decode-string
+                                         (buffer-substring-no-properties
+                                          start end))))))
             (goto-char start)
             (delete-char (- end start))
             (insert (base64-encode-string
-                     (apply 'string (mapcar (lambda (x) x) tmp)))))))
+                     (apply #'string (mapcar (lambda (x) x) tmp)))))))
       (string-replace "\11" "        " (buffer-string)))))
 
 (defun elkee-read-buffer (password keyfile &optional unprotect)
@@ -839,7 +839,7 @@ SELECTORS:
     (insert (elkee-database-xml-unsafe
              (with-current-buffer buffer
                (elkee-read-buffer password keyfile t))))
-    (apply 'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
+    (apply #'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
 
 (defun elkee-find-creds (filepath password keyfile &rest selectors)
   "Read FILEPATH to find KeePass creds in.
@@ -861,7 +861,7 @@ SELECTORS:
     (set-buffer-multibyte nil)
     (insert (elkee-database-xml-unsafe
              (elkee-read filepath password keyfile t)))
-    (apply 'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
+    (apply #'elkee--find-creds `(,(libxml-parse-xml-region) ,@selectors))))
 
 (provide 'elkee)
 ;;; elkee.el ends here
