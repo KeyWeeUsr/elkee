@@ -5,7 +5,7 @@
 ;; Author: Peter Badida <keyweeusr@gmail.com>
 ;; Keywords: convenience, keepass, client
 ;; Version: 1.0.0
-;; Package-Requires: ((emacs "25.1") (kaesar "0.9.5"))
+;; Package-Requires: ((emacs "25.1") (kaesar "0.9.5") (elchacha "1.0.4"))
 ;; Homepage: https://github.com/KeyWeeUsr/elkee
 
 ;; This program is free software; you can redistribute it and/or modify
