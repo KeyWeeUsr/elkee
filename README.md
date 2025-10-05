@@ -1,4 +1,6 @@
 # elkee
+[![MELPA][melpa-badge]][melpa-package]
+[![MELPA Stable][melpa-stable-badge]][melpa-stable-package]
 [![CI][ci-badge]][ci-workflow]
 [![Coverage Status][cover-badge]][cover-link]
 [![Buy me a coffee][bmc-badge]][bmc-link]
@@ -51,7 +53,8 @@ TODO:
 
 ## How to
 
-Clone and install manually, then:
+Install it from [Melpa](https://melpa.org/#/getting-started) or clone and
+install manually, then:
 
 1. Ensure [Kaesar][kaesar] Emacs library is installed
 2. `(require 'elkee)`
@@ -63,6 +66,10 @@ For more visit function documentation for:
 
 or use other public funcs for reading the data manually.
 
+[melpa-badge]: http://melpa.org/packages/elkee-badge.svg
+[melpa-package]: http://melpa.org/#/elkee
+[melpa-stable-badge]: http://stable.melpa.org/packages/elkee-badge.svg
+[melpa-stable-package]: http://stable.melpa.org/#/elkee
 [bmc-badge]: https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee
 [bmc-link]: https://www.buymeacoffee.com/peterbadida
 [ppl-badge]: https://img.shields.io/badge/-paypal-grey?logo=paypal
